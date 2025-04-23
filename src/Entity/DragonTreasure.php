@@ -8,7 +8,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DragonTreasureRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    description: 'A treasure guarded by a dragon, with a name, description, value, and cool factor.',
+)]
 class DragonTreasure
 {
     #[ORM\Id]
@@ -16,21 +18,39 @@ class DragonTreasure
     #[ORM\Column]
     private ?int $id = null;
 
+    /**
+     * The name of the treasure, which should be unique and descriptive.
+     */
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    /**
+     * A detailed description of the treasure, including its history and significance.
+     */
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    /**
+     * The estimated value of the treasure in gold coins.
+     */
     #[ORM\Column]
     private ?int $value = null;
 
+    /**
+     * A subjective measure of how cool the treasure is, on a scale from 1 to 10.
+     */
     #[ORM\Column]
     private ?int $coolFactor = null;
 
+    /**
+     * The date and time when the treasure was created.
+     */
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    /**
+     * Indicates whether the treasure is currently published and available for viewing.
+     */
     #[ORM\Column]
     private ?bool $isPublished = null;
 
