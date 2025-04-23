@@ -1,4 +1,6 @@
-
+###> ide/visual-studio ###
+/.vscode/
+###< ide/visual-studio ###
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
