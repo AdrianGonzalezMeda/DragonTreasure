@@ -7,6 +7,7 @@ use App\Repository\DragonTreasureRepository;
 use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: DragonTreasureRepository::class)]
 #[ApiResource(
@@ -19,6 +20,12 @@ use Doctrine\ORM\Mapping as ORM;
         new \ApiPlatform\Metadata\Put(),
         new \ApiPlatform\Metadata\Patch(),
     ],
+    normalizationContext: [
+        'groups' => ['treasure:read'],
+    ],
+    denormalizationContext: [
+        'groups' => ['treasure:write'],
+    ]
 )]
 class DragonTreasure
 {
@@ -31,24 +38,28 @@ class DragonTreasure
      * The name of the treasure, which should be unique and descriptive.
      */
     #[ORM\Column(length: 255)]
+    #[Groups(['treasure:read', 'treasure:write'])]
     private ?string $name = null;
 
     /**
      * A detailed description of the treasure, including its history and significance.
      */
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['treasure:read'])]
     private ?string $description = null;
 
     /**
      * The estimated value of the treasure in gold coins.
      */
     #[ORM\Column]
+    #[Groups(['treasure:read', 'treasure:write'])]
     private ?int $value = null;
 
     /**
      * A subjective measure of how cool the treasure is, on a scale from 1 to 10.
      */
     #[ORM\Column]
+    #[Groups(['treasure:read', 'treasure:write'])]
     private ?int $coolFactor = null;
 
     /**
@@ -61,7 +72,7 @@ class DragonTreasure
      * Indicates whether the treasure is currently published and available for viewing.
      */
     #[ORM\Column]
-    private ?bool $isPublished = null;
+    private ?bool $isPublished = false;
 
     public function __construct()
     {
@@ -90,6 +101,14 @@ class DragonTreasure
         return $this->description;
     }
 
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    #[Groups(['treasure:write'])]
     public function setTextDescription(string $description): static
     {
         $this->description = nl2br($description);
@@ -121,6 +140,13 @@ class DragonTreasure
         return $this;
     }
 
+    public function setPlunderedAt($plunderedAt): static
+    {
+        $this->plunderedAt = $plunderedAt;
+
+        return $this;
+    }
+
     public function getPlunderedAt(): ?\DateTimeImmutable
     {
         return $this->plunderedAt;
@@ -129,6 +155,7 @@ class DragonTreasure
     /**
      * A human-readable representation of the time since the treasure was plundered.
      */
+    #[Groups(['treasure:read'])]
     public function getPlunderedAtAgo(): string    
     {
         return Carbon::instance($this->plunderedAt)->diffForHumans();
