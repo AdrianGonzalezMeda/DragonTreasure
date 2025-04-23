@@ -4,12 +4,21 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\DragonTreasureRepository;
+use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DragonTreasureRepository::class)]
 #[ApiResource(
+    shortName: 'Treasure',
     description: 'A treasure guarded by a dragon, with a name, description, value, and cool factor.',
+    operations: [
+        new \ApiPlatform\Metadata\GetCollection(),
+        new \ApiPlatform\Metadata\Get(),
+        new \ApiPlatform\Metadata\Post(),
+        new \ApiPlatform\Metadata\Put(),
+        new \ApiPlatform\Metadata\Patch(),
+    ],
 )]
 class DragonTreasure
 {
@@ -43,16 +52,21 @@ class DragonTreasure
     private ?int $coolFactor = null;
 
     /**
-     * The date and time when the treasure was created.
+     * The date and time when the treasure was plunder.
      */
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?\DateTimeImmutable $plunderedAt;
 
     /**
      * Indicates whether the treasure is currently published and available for viewing.
      */
     #[ORM\Column]
     private ?bool $isPublished = null;
+
+    public function __construct()
+    {
+        $this->plunderedAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -76,9 +90,9 @@ class DragonTreasure
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setTextDescription(string $description): static
     {
-        $this->description = $description;
+        $this->description = nl2br($description);
 
         return $this;
     }
@@ -107,16 +121,17 @@ class DragonTreasure
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getPlunderedAt(): ?\DateTimeImmutable
     {
-        return $this->createdAt;
+        return $this->plunderedAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    /**
+     * A human-readable representation of the time since the treasure was plundered.
+     */
+    public function getPlunderedAtAgo(): string    
     {
-        $this->createdAt = $createdAt;
-
-        return $this;
+        return Carbon::instance($this->plunderedAt)->diffForHumans();
     }
 
     public function isPublished(): ?bool
