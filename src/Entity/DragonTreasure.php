@@ -35,6 +35,12 @@ use function Symfony\Component\String\u;
         'groups' => ['treasure:write'],
     ],
     paginationItemsPerPage: 10,
+    formats: [
+        'jsonld',
+        'json',
+        'html',
+        'csv' => 'text/csv',
+    ],
 )]
 
 #[ApiFilter(PropertyFilter::class)]
