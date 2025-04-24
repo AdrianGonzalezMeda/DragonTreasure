@@ -25,7 +25,11 @@ use function Symfony\Component\String\u;
     description: 'A treasure guarded by a dragon, with a name, description, value, and cool factor.',
     operations: [
         new \ApiPlatform\Metadata\GetCollection(),
-        new \ApiPlatform\Metadata\Get(),
+        new \ApiPlatform\Metadata\Get(
+            normalizationContext: [
+                'groups' => ['treasure:read', 'treasure:item:get'],
+            ],
+        ),
         new \ApiPlatform\Metadata\Post(),
         new \ApiPlatform\Metadata\Put(),
         new \ApiPlatform\Metadata\Patch(),
