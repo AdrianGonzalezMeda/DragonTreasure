@@ -58,10 +58,11 @@ class DragonTreasure
      * The name of the treasure, which should be unique and descriptive.
      */
     #[ORM\Column(length: 255)]
-    #[Groups(['treasure:read', 'treasure:write'])]
+    #[Groups(['treasure:read', 'treasure:write', 'user:read'])]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[Assert\NotBlank]
-    #[Assert\Length(min: 2, max: 50, maxMessage: 'Describe your loot in 50 chars or less')]    private ?string $name = null;
+    #[Assert\Length(min: 2, max: 50, maxMessage: 'Describe your loot in 50 chars or less')]
+    private ?string $name = null;
 
     /**
      * A detailed description of the treasure, including its history and significance.
@@ -76,7 +77,7 @@ class DragonTreasure
      * The estimated value of the treasure in gold coins.
      */
     #[ORM\Column]
-    #[Groups(['treasure:read', 'treasure:write'])]
+    #[Groups(['treasure:read', 'treasure:write', 'user:read'])]
     #[ApiFilter(RangeFilter::class)]
     #[Assert\GreaterThanOrEqual(0)]
     private ?int $value = 0;
@@ -134,7 +135,7 @@ class DragonTreasure
     {
         return $this->description;
     }
-    
+
     #[Groups(['treasure:read'])]
     public function getShortDescription(): string
     {
