@@ -56,8 +56,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, DragonTreasure>
      */
-    #[ORM\OneToMany(targetEntity: DragonTreasure::class, mappedBy: 'owner')]
-    #[Groups(['user:read'])]
+    #[ORM\OneToMany(targetEntity: DragonTreasure::class, mappedBy: 'owner', cascade: ['persist'])]
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\Valid]
     private Collection $dragonTreasures;
 
     public function __construct()
