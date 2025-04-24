@@ -19,6 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use function Symfony\Component\String\u;
 
 #[ORM\Entity(repositoryClass: DragonTreasureRepository::class)]
+#[ORM\Table(name: '`dragon_treasure`')]
 #[ApiResource(
     shortName: 'Treasure',
     description: 'A treasure guarded by a dragon, with a name, description, value, and cool factor.',
