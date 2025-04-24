@@ -14,6 +14,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
+
 use function Symfony\Component\String\u;
 
 #[ORM\Entity(repositoryClass: DragonTreasureRepository::class)]
@@ -57,7 +59,8 @@ class DragonTreasure
     #[ORM\Column(length: 255)]
     #[Groups(['treasure:read', 'treasure:write'])]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
-    private ?string $name = null;
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 50, maxMessage: 'Describe your loot in 50 chars or less')]    private ?string $name = null;
 
     /**
      * A detailed description of the treasure, including its history and significance.
@@ -65,6 +68,7 @@ class DragonTreasure
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['treasure:read'])]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
+    #[Assert\NotBlank]
     private ?string $description = null;
 
     /**
@@ -73,14 +77,17 @@ class DragonTreasure
     #[ORM\Column]
     #[Groups(['treasure:read', 'treasure:write'])]
     #[ApiFilter(RangeFilter::class)]
-    private ?int $value = null;
+    #[Assert\GreaterThanOrEqual(0)]
+    private ?int $value = 0;
 
     /**
      * A subjective measure of how cool the treasure is, on a scale from 1 to 10.
      */
     #[ORM\Column]
     #[Groups(['treasure:read', 'treasure:write'])]
-    private ?int $coolFactor = null;
+    #[Assert\GreaterThanOrEqual(0)]
+    #[Assert\LessThanOrEqual(10)]
+    private ?int $coolFactor = 0;
 
     /**
      * The date and time when the treasure was plunder.
@@ -95,9 +102,8 @@ class DragonTreasure
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $isPublished = false;
 
-    public function __construct(string $name)
+    public function __construct()
     {
-        $this->name = $name;
         $this->plunderedAt = new \DateTimeImmutable();
     }
 
