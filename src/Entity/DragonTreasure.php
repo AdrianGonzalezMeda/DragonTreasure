@@ -7,6 +7,8 @@ use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Serializer\Filter\PropertyFilter;
 use App\Repository\DragonTreasureRepository;
 use Carbon\Carbon;
@@ -49,7 +51,25 @@ use function Symfony\Component\String\u;
         'csv' => 'text/csv',
     ],
 )]
-
+/* Subresource for the User entity
+ * This allows us to fetch all treasures owned by a specific user
+ * using the URI /users/{user_id}/treasures
+ */
+#[ApiResource(
+    shortName: 'Treasure',
+    operations: [
+        new GetCollection(
+            uriTemplate: '/users/{user_id}/treasures.{_format}',
+            uriVariables: [
+                'user_id' => new Link(
+                    fromClass: User::class,
+                    fromProperty: 'dragonTreasures'
+                ),
+            ],
+            normalizationContext: ['groups' => ['treasure:read']],
+        ),
+    ],
+)]
 #[ApiFilter(PropertyFilter::class)]
 #[ApiFilter(SearchFilter::class, properties: [
     'owner.username' => 'partial',
@@ -111,7 +131,7 @@ class DragonTreasure
     #[ApiFilter(BooleanFilter::class)]
     private ?bool $isPublished = false;
 
-    #[ORM\ManyToOne(inversedBy: 'dragonTreasures')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'dragonTreasures')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['treasure:read', 'treasure:write'])]
     #[Assert\Valid]
